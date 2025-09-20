@@ -1920,8 +1920,8 @@ body {
 
 /* Daily Content Styles */
 .daily-content {
-  max-width: 1000px;
-  margin: 0 auto;
+  /* Removed max-width and margin constraints to allow full width usage */
+  width: 100%;
   color: #e5e5e7;
 }
 
