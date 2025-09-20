@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import { insightsApi, type Insight } from '../api/client';
 import { parseInlineFormatting } from '../utils/formatText';
 
@@ -10,6 +11,56 @@ export function DailyView({ selectedDate }: DailyViewProps) {
   const [insight, setInsight] = useState<Insight | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Function to download the markdown content
+  const downloadMarkdown = async () => {
+    if (!insight || !selectedDate) return;
+
+    const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).replace(/\//g, '-');
+
+    const filename = `daily-insights-${formattedDate}.md`;
+    
+    // Try to use File System Access API if available (Chrome/Edge 86+)
+    if ('showSaveFilePicker' in window) {
+      try {
+        const fileHandle = await (window as any).showSaveFilePicker({
+          suggestedName: filename,
+          types: [
+            {
+              description: 'Markdown files',
+              accept: {
+                'text/markdown': ['.md'],
+              },
+            },
+          ],
+        });
+        
+        const writable = await fileHandle.createWritable();
+        await writable.write(insight.content);
+        await writable.close();
+        return;
+      } catch (err) {
+        // User cancelled or error occurred, fall back to regular download
+        console.log('File picker cancelled or not supported, using fallback');
+      }
+    }
+    
+    // Fallback to regular download for older browsers
+    const blob = new Blob([insight.content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     if (!selectedDate) {
@@ -125,6 +176,17 @@ export function DailyView({ selectedDate }: DailyViewProps) {
 
   return (
     <div className="daily-content">
+      {/* Download button for the daily insight */}
+      <div className="daily-content-header">
+        <button
+          onClick={downloadMarkdown}
+          className="download-button"
+          title="Download as Markdown"
+        >
+          <Download size={16} />
+          Download
+        </button>
+      </div>
       {formatContent(insight.content)}
     </div>
   );
