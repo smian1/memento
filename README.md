@@ -47,7 +47,7 @@ A beautiful, self-hosted web application for managing and analyzing your daily i
 
 ### 1. Clone & Setup
 ```bash
-git clone https://github.com/yourusername/memento.git
+git clone https://github.com/smian1/memento.git
 cd memento
 ```
 
