@@ -89,14 +89,106 @@ if [ ! -f .env ]; then
 fi
 
 # Validate API key in .env
-if ! grep -q "LIMITLESS_API_KEY=" .env || grep -q "LIMITLESS_API_KEY=your_limitless_api_key_here" .env; then
-    print_warning "LIMITLESS_API_KEY not properly configured in .env file"
+print_info "Validating API key configuration..."
+
+# Check if API key exists in .env
+if ! grep -q "LIMITLESS_API_KEY=" .env; then
+    print_error "LIMITLESS_API_KEY not found in .env file"
     echo ""
-    echo "Please edit .env and add your actual Limitless API key:"
+    echo "Please edit .env and add your Limitless API key:"
     echo "LIMITLESS_API_KEY=your_actual_api_key_here"
     echo ""
     echo "Get your API key from: https://www.limitless.ai/developers"
     exit 1
+fi
+
+# Extract API key value (handle both quoted and unquoted)
+API_KEY=$(grep "LIMITLESS_API_KEY=" .env | cut -d'=' -f2- | sed 's/^"//;s/"$//' | sed "s/^'//;s/'$//")
+
+# Check if API key is still the placeholder
+if [ "$API_KEY" = "your_limitless_api_key_here" ] || [ "$API_KEY" = "your_actual_api_key_here" ] || [ -z "$API_KEY" ]; then
+    print_error "LIMITLESS_API_KEY is not properly configured in .env file"
+    echo ""
+    echo "🤖 Beep boop! Your API key looks suspiciously like a placeholder..."
+    echo ""
+    echo "I see you're still using the default value (or forgot to add one entirely)."
+    echo "Time to swap that placeholder for the real deal! 🔑"
+    echo ""
+    echo "📝 Here's what to do:"
+    echo "   1. Visit: https://www.limitless.ai/developers"
+    echo "   2. Grab your shiny new API key"
+    echo "   3. Edit .env and replace the placeholder:"
+    echo "      LIMITLESS_API_KEY=your_actual_api_key_here"
+    echo ""
+    echo "💡 Remember: Your real API key will look much more random and mysterious!"
+    echo ""
+    exit 1
+fi
+
+# Test API key validity by making a test call
+print_info "Testing API key connectivity..."
+if command -v curl &> /dev/null; then
+    # Test the API key with a simple stats call
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "X-API-Key: $API_KEY" "https://api.limitless.ai/v1/chats?limit=1" --connect-timeout 10 --max-time 15)
+    
+    if [ "$HTTP_STATUS" = "200" ]; then
+        print_status "API key is valid and working"
+    elif [ "$HTTP_STATUS" = "401" ] || [ "$HTTP_STATUS" = "403" ]; then
+        print_error "API key authentication failed (HTTP $HTTP_STATUS)"
+        echo ""
+        echo "🔐 Looks like your API key and the Limitless servers aren't on speaking terms!"
+        echo ""
+        echo "Don't panic! Here's your troubleshooting checklist:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📋 Quick Fixes:"
+        echo "   • Double-check your API key in .env file"
+        echo "   • Copy-paste it fresh from: https://www.limitless.ai/developers"
+        echo "   • Remove any sneaky spaces or invisible characters"
+        echo "   • Make sure you didn't accidentally include the quotes in the key itself"
+        echo ""
+        echo "🕵️ Detective Work:"
+        echo "   • Verify your Limitless account is still active"
+        echo "   • Double-check you copied the entire key (no missing characters)"
+        echo "   • Try generating a fresh API key if this one seems cursed"
+        echo ""
+        echo "💡 Pro Tip: Your API key should look like a UUID (lots of dashes and characters)"
+        echo "    Example format: 12345678-1234-1234-1234-123456789abc"
+        echo ""
+        echo "Still stuck? The Limitless team is pretty helpful at resolving these mysteries! 🕵️‍♂️"
+        echo ""
+        exit 1
+    elif [ "$HTTP_STATUS" = "000" ]; then
+        print_warning "Could not connect to Limitless API (network issue)"
+        echo ""
+        echo "🌐 Houston, we have a network problem!"
+        echo ""
+        echo "Your internet seems to be playing hide and seek with the Limitless servers."
+        echo "This could mean:"
+        echo "   • Your WiFi is taking a coffee break ☕"
+        echo "   • The Limitless servers are having a moment"
+        echo "   • Your firewall is being overly protective"
+        echo ""
+        echo "📡 Don't worry, we'll try to start the app anyway and hope for the best!"
+        echo "    (You can test connectivity later once everything is running)"
+        echo ""
+    else
+        print_warning "API test returned unexpected status: HTTP $HTTP_STATUS"
+        echo ""
+        echo "🤔 Well, that's... interesting! Got an unexpected response from the API."
+        echo ""
+        echo "This might be:"
+        echo "   • A temporary server hiccup (it happens to the best of us)"
+        echo "   • Some new API behavior we haven't seen before"
+        echo "   • The internet being its mysterious self"
+        echo ""
+        echo "🚀 We'll optimistically try to start the app anyway!"
+        echo "    If things get weird, double-check your API key at:"
+        echo "    https://www.limitless.ai/developers"
+        echo ""
+    fi
+else
+    print_warning "curl not available - skipping API key validation"
+    echo "Install curl for full API key validation"
 fi
 
 print_status "Environment configuration found"
