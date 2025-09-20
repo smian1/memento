@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
 import { insightsApi, type Insight } from '../api/client';
 import { parseInlineFormatting } from '../utils/formatText';
 
@@ -180,11 +179,10 @@ export function DailyView({ selectedDate }: DailyViewProps) {
       <div className="daily-content-header">
         <button
           onClick={downloadMarkdown}
-          className="download-button"
+          className="download-icon-button"
           title="Download as Markdown"
         >
-          <Download size={16} />
-          Download
+          ⬇
         </button>
       </div>
       {formatContent(insight.content)}

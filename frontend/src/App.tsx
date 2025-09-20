@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { HiLightBulb, HiViewGrid, HiCalendar } from 'react-icons/hi';
+import { useState, useEffect } from 'react';
+import { HiLightBulb, HiViewGrid } from 'react-icons/hi';
 import { Filter } from 'lucide-react';
 import { Calendar } from './components/Calendar';
 import { DailyView } from './components/DailyView';

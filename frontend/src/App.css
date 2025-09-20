@@ -1933,29 +1933,31 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.download-button {
+.download-icon-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #06b6d4, #14b8a6);
-  color: white;
-  border: none;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e5e7;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+  font-size: 1.125rem;
+  font-weight: bold;
 }
 
-.download-button:hover {
-  background: linear-gradient(135deg, #0891b2, #0f766e);
+.download-icon-button:hover {
+  background: rgba(6, 182, 212, 0.1);
+  color: #06b6d4;
+  border-color: rgba(6, 182, 212, 0.3);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
 }
 
-.download-button:active {
+.download-icon-button:active {
   transform: translateY(0);
 }
 
