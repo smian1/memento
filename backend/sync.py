@@ -1,7 +1,7 @@
 import os
 import requests
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
@@ -67,9 +67,18 @@ class LimitlessSync:
 
             for chat in daily_insights:
                 created_at = chat.get('createdAt', 'No date')
-                date_str = created_at[:10]  # Extract YYYY-MM-DD
-
-                print(f"Processing Daily Insights - {date_str}")
+                
+                # Convert the createdAt timestamp to content date by subtracting one day
+                # This aligns the stored date with the actual content date instead of processing date
+                try:
+                    created_datetime = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                    content_date = created_datetime - timedelta(days=1)
+                    date_str = content_date.strftime('%Y-%m-%d')
+                except (ValueError, AttributeError):
+                    # Fallback to original behavior if timestamp parsing fails
+                    date_str = created_at[:10]  # Extract YYYY-MM-DD
+                
+                print(f"Processing Daily Insights - {date_str} (content date)")
 
                 # Check if insight already exists
                 existing_insight = crud.get_insight_by_date(db, date_str)

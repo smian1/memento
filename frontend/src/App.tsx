@@ -147,7 +147,7 @@ function App() {
                 selectedDate ? (
                   <>
                     <HiLightBulb className="content-title-icon" />
-                    {`Daily Insights - ${new Date(selectedDate).toLocaleDateString('en-US', {
+                    {`Daily Insights - ${new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', {
                       weekday: 'short',
                       month: 'short',
                       day: 'numeric',
