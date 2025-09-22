@@ -38,12 +38,45 @@ A beautiful, self-hosted web application for managing and analyzing your daily i
 - Smooth animations and hover effects
 - Accessibility-first design with intuitive interactions
 
-## 🚀 Quick Start
+## ⚠️ Important Prerequisites
 
-### Prerequisites
+**🧠 CRITICAL: This is an experimental project that depends on Daily Insights from Limitless AI.**
+
+### Required Dependencies
+
+#### 1. **Limitless AI Account with Daily Insights Enabled**
+- **Most Important**: You MUST have Daily Insights working in your Limitless AI app
+- Daily Insights are generated around 7:00 AM Pacific Time
+- **If you don't see Daily Insights in Limitless, you won't see data in Memento**
+- This is normal for new accounts or days with insufficient data
+
+#### 2. **Technical Requirements**
 - **Python 3.9+**
 - **Node.js 16+** and npm
-- **Limitless AI account** with API access
+- **Limitless AI account** with API access from https://www.limitless.ai/developers
+
+### ⚠️ Data Dependency Warning
+
+**Memento cannot create insights - it only displays and organizes existing Daily Insights from Limitless AI.**
+
+**Before using Memento:**
+1. ✅ Enable Daily Insights: **Settings → Notification → Daily Insights (toggle ON)**
+2. ✅ Confirm you can see Daily Insights in your Limitless app chat history
+3. ✅ Wait for at least one Daily Insight to be generated (usually after 7 AM Pacific)
+4. ✅ If missing insights, check your Limitless app first - the issue is likely there
+
+**Common scenarios where you won't see data:**
+- New Limitless account (hasn't generated insights yet)
+- Days when Limitless didn't process enough data
+- Daily Insights disabled in Limitless settings
+- Technical issues with Limitless insight generation
+
+**Future Plans:**
+- Create insights directly in Memento (removing Limitless dependency)
+- Import life logs as examples
+- Enhanced local insight generation
+
+## 🚀 Quick Start
 
 ### 1. Clone & Setup
 ```bash
@@ -51,32 +84,34 @@ git clone https://github.com/smian1/memento.git
 cd memento
 ```
 
-### 2. Configure API Key
+### 2. One-Command Setup & Launch
 ```bash
-# Copy the environment template
-cp .env.example .env
-
-# Edit .env and add your Limitless API key
-# Get your API key from: https://www.limitless.ai/developers
-LIMITLESS_API_KEY=your_actual_api_key_here
-```
-
-### 3. Run the Application
-```bash
-# Start both frontend and backend servers
+# Start the interactive setup and launch
 ./run.sh
 ```
 
-### 4. Access Your Dashboard
+**That's it!** The script will:
+1. ✅ Check all technical prerequisites (Python, Node.js, etc.)
+2. 🔑 **Interactively prompt you for your Limitless API key**
+3. ✅ Validate your API key works with Limitless servers
+4. 🧠 Check for Daily Insights in your account (and warn if missing)
+5. 📦 Install all dependencies automatically
+6. 🚀 Start both frontend and backend servers
+7. 🎯 Provide next steps and troubleshooting guidance
+
+### 3. Access Your Dashboard
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
 
-That's it! The application will:
-1. Install all dependencies automatically
-2. Create the SQLite database
-3. Start both servers
-4. Open your insights dashboard
+### 4. First Run Guidance
+On your first run, the script will:
+- Guide you through API key setup
+- Check for Daily Insights in your account
+- Provide specific next steps
+- Offer troubleshooting if no data is found
+
+**Get your API key from**: https://www.limitless.ai/developers
 
 ## 📁 Project Architecture
 
@@ -129,10 +164,11 @@ python3 sync.py  # Fetch your latest insights
 ## 💡 Usage Guide
 
 ### First Time Setup
-1. **Get Your API Key**: Visit [Limitless AI Developers](https://www.limitless.ai/developers)
-2. **Add to .env**: Copy your API key to the `.env` file
-3. **Run the App**: Use `./run.sh` to start everything
-4. **Sync Your Data**: Run `cd backend && python3 sync.py` to fetch your insights
+1. **Check Limitless First**: Verify Daily Insights are working in your Limitless AI app
+2. **Run Setup**: Execute `./run.sh` - it will guide you through everything
+3. **Enter API Key**: The script will prompt you to paste your API key from [Limitless AI Developers](https://www.limitless.ai/developers)
+4. **Automatic Validation**: Your API key and Daily Insights will be checked automatically
+5. **Follow Guidance**: The script provides specific next steps based on what it finds
 
 ### Daily Workflow
 1. **📅 Browse Insights**: Use the calendar to navigate your daily insights
@@ -238,56 +274,117 @@ open http://localhost:8000/docs
 
 ## 🚨 Troubleshooting
 
-### Common Issues
+### Most Common Issue: "No Data Showing"
 
-**"Backend won't start"**
+**🧠 If you're not seeing any insights in Memento:**
+
+#### Step 1: Check Limitless AI First
+```bash
+# The #1 cause is missing Daily Insights in Limitless itself
+```
+1. **Open your Limitless AI app** (mobile or desktop)
+2. **Look for "Daily insights" or similar** in your chat history
+3. **If you don't see any**: This is your problem! Memento can only show what Limitless creates.
+
+#### Step 2: Enable Daily Insights
+1. **Open your Limitless AI app**
+2. **Go to Settings → Notification (under Preferences)**
+3. **Find "Daily Insights" under Daily Notification**
+4. **Toggle it ON**
+5. **Wait until after 7:00 AM Pacific** for generation
+
+#### Step 3: Verify Data in Memento
+```bash
+# Force a sync to check for new data
+cd backend && python3 sync.py
+
+# Check if any insights were found
+curl http://localhost:8000/stats
+```
+
+#### When Daily Insights Are Missing
+**This is completely normal in these situations:**
+- **New Limitless account** (hasn't generated first insights yet)
+- **Quiet days** (Limitless didn't process enough data)
+- **Weekends or holidays** (less activity to analyze)
+- **Technical issues** with Limitless insight generation
+
+**What to do:**
+- ✅ **Use Memento anyway** - you can create custom action items
+- ✅ **Check back tomorrow** after 7 AM Pacific
+- ✅ **Verify Limitless app** shows insights before expecting them in Memento
+
+### Technical Issues
+
+#### "run.sh Script Fails"
+```bash
+# Check prerequisites
+python3 --version  # Need 3.9+
+node --version     # Need 16+
+```
+
+#### "API Key Issues"
+The interactive setup should catch these, but if needed:
+```bash
+# Manually test your API key
+curl -H "X-API-Key: YOUR_KEY_HERE" https://api.limitless.ai/v1/chats?limit=1
+
+# Re-run setup to enter new key
+rm .env
+./run.sh
+```
+
+#### "Backend Won't Start"
 ```bash
 # Check Python version (need 3.9+)
 python3 --version
 
-# Install dependencies
+# Install dependencies manually
 cd backend && pip3 install -r requirements.txt
 
 # Check if port is in use
 lsof -i :8000
+# If in use: lsof -ti:8000 | xargs kill -9
 ```
 
-**"Frontend won't start"**
+#### "Frontend Won't Start"
 ```bash
 # Check Node version (need 16+)
 node --version
 
 # Clear and reinstall
-cd frontend && rm -rf node_modules && npm install
+cd frontend && rm -rf node_modules package-lock.json && npm install
 
 # Check if port is in use
 lsof -i :5173
+# If in use: lsof -ti:5173 | xargs kill -9
 ```
 
-**"Sync not working"**
+#### "Sync Not Working"
 ```bash
-# Verify API key is set
-echo $LIMITLESS_API_KEY
-
 # Test API connection
-curl -H "X-API-Key: $LIMITLESS_API_KEY" https://api.limitless.ai/v1/chats
+curl -H "X-API-Key: $(grep LIMITLESS_API_KEY .env | cut -d= -f2)" https://api.limitless.ai/v1/chats
 
-# Check sync logs
+# Run sync with verbose output
 cd backend && python3 sync.py --dry-run
-```
 
-**"No insights appearing"**
-- Make sure you have "Daily insights" in your Limitless AI account
-- Run sync: `cd backend && python3 sync.py`
-- Check API key is correctly set in `.env`
+# Check for Daily Insights specifically
+curl -H "X-API-Key: $(grep LIMITLESS_API_KEY .env | cut -d= -f2)" "https://api.limitless.ai/v1/chats?q=Daily%20insights"
+```
 
 ### Reset Everything
 ```bash
-# WARNING: This deletes all your data
-rm backend/insights.db
-./run.sh  # Will recreate database
-cd backend && python3 sync.py  # Re-sync from API
+# WARNING: This deletes all your local data
+rm backend/insights.db .env
+./run.sh  # Will recreate everything and prompt for API key
 ```
+
+### Still Having Issues?
+
+1. **Double-check Daily Insights exist in Limitless first** - this fixes 90% of issues
+2. **Run the script again** - the interactive setup catches most problems
+3. **Check the error messages** - they're designed to be helpful
+4. **Try the manual setup** (see Manual Setup section below)
 
 ## 🔒 Security & Privacy
 

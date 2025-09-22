@@ -75,123 +75,172 @@ if ! command -v npm &> /dev/null; then
 fi
 print_status "npm $(npm --version) found"
 
-# Check .env file
+# Function to prompt for API key
+prompt_for_api_key() {
+    echo ""
+    echo "🔑 Let's set up your Limitless API key!"
+    echo "════════════════════════════════════════"
+    echo ""
+    echo "📍 First, get your API key from: ${BLUE}https://www.limitless.ai/developers${NC}"
+    echo ""
+    echo "💡 Your API key should look like: 12345678-1234-1234-1234-123456789abc"
+    echo "   (It's a UUID format with dashes and random characters)"
+    echo ""
+    
+    while true; do
+        echo -n "🔐 Please paste your Limitless API key: "
+        read -s API_KEY_INPUT
+        echo ""
+        
+        # Basic format validation
+        if [ -z "$API_KEY_INPUT" ]; then
+            print_error "API key cannot be empty. Please try again."
+            continue
+        fi
+        
+        # Check if it looks like a UUID (basic validation)
+        if [[ ! "$API_KEY_INPUT" =~ ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$ ]]; then
+            print_warning "That doesn't look like a valid API key format."
+            echo "Expected format: 12345678-1234-1234-1234-123456789abc"
+            echo ""
+            echo -n "Continue anyway? (y/N): "
+            read -n 1 CONTINUE
+            echo ""
+            if [[ ! "$CONTINUE" =~ ^[Yy]$ ]]; then
+                continue
+            fi
+        fi
+        
+        # Test the API key
+        print_info "Testing your API key..."
+        if command -v curl &> /dev/null; then
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "X-API-Key: $API_KEY_INPUT" "https://api.limitless.ai/v1/chats?limit=1" --connect-timeout 10 --max-time 15)
+            
+            if [ "$HTTP_STATUS" = "200" ]; then
+                print_status "✨ Perfect! Your API key works!"
+                break
+            elif [ "$HTTP_STATUS" = "401" ] || [ "$HTTP_STATUS" = "403" ]; then
+                print_error "❌ API key authentication failed"
+                echo ""
+                echo "This could mean:"
+                echo "   • The API key was copied incorrectly"
+                echo "   • The API key has expired or been revoked"
+                echo "   • There are extra spaces or characters"
+                echo ""
+                echo -n "Would you like to try again? (Y/n): "
+                read -n 1 RETRY
+                echo ""
+                if [[ "$RETRY" =~ ^[Nn]$ ]]; then
+                    exit 1
+                fi
+                continue
+            else
+                print_warning "Got unexpected response (HTTP $HTTP_STATUS)"
+                echo "We'll proceed anyway - this might be a temporary server issue."
+                break
+            fi
+        else
+            print_warning "curl not available - skipping validation"
+            break
+        fi
+    done
+    
+    # Save to .env file
+    echo "LIMITLESS_API_KEY=$API_KEY_INPUT" > .env
+    print_status "API key saved to .env file"
+    API_KEY="$API_KEY_INPUT"
+}
+
+# Check for .env file and API key
+print_info "Checking API key configuration..."
+
+API_KEY=""
+NEED_SETUP=false
+
 if [ ! -f .env ]; then
-    print_warning ".env file not found!"
-    echo ""
-    echo "To get started:"
-    echo "1. Copy the template: cp .env.example .env"
-    echo "2. Get your API key from: https://www.limitless.ai/developers"
-    echo "3. Add your API key to .env file"
-    echo "4. Run this script again"
-    echo ""
-    exit 1
+    print_info ".env file not found - let's create it!"
+    NEED_SETUP=true
+else
+    # Check if API key exists in .env
+    if grep -q "LIMITLESS_API_KEY=" .env; then
+        # Extract API key value (handle both quoted and unquoted)
+        API_KEY=$(grep "LIMITLESS_API_KEY=" .env | cut -d'=' -f2- | sed 's/^"//;s/"$//' | sed "s/^'//;s/'$//")
+        
+        # Check if API key is still the placeholder or empty
+        if [ "$API_KEY" = "your_limitless_api_key_here" ] || [ "$API_KEY" = "your_actual_api_key_here" ] || [ -z "$API_KEY" ]; then
+            print_warning "Found placeholder API key in .env file"
+            NEED_SETUP=true
+        fi
+    else
+        print_warning "No API key found in .env file"
+        NEED_SETUP=true
+    fi
 fi
 
-# Validate API key in .env
-print_info "Validating API key configuration..."
-
-# Check if API key exists in .env
-if ! grep -q "LIMITLESS_API_KEY=" .env; then
-    print_error "LIMITLESS_API_KEY not found in .env file"
-    echo ""
-    echo "Please edit .env and add your Limitless API key:"
-    echo "LIMITLESS_API_KEY=your_actual_api_key_here"
-    echo ""
-    echo "Get your API key from: https://www.limitless.ai/developers"
-    exit 1
+# If we need setup, prompt for API key
+if [ "$NEED_SETUP" = true ]; then
+    prompt_for_api_key
 fi
 
-# Extract API key value (handle both quoted and unquoted)
-API_KEY=$(grep "LIMITLESS_API_KEY=" .env | cut -d'=' -f2- | sed 's/^"//;s/"$//' | sed "s/^'//;s/'$//")
-
-# Check if API key is still the placeholder
-if [ "$API_KEY" = "your_limitless_api_key_here" ] || [ "$API_KEY" = "your_actual_api_key_here" ] || [ -z "$API_KEY" ]; then
-    print_error "LIMITLESS_API_KEY is not properly configured in .env file"
-    echo ""
-    echo "🤖 Beep boop! Your API key looks suspiciously like a placeholder..."
-    echo ""
-    echo "I see you're still using the default value (or forgot to add one entirely)."
-    echo "Time to swap that placeholder for the real deal! 🔑"
-    echo ""
-    echo "📝 Here's what to do:"
-    echo "   1. Visit: https://www.limitless.ai/developers"
-    echo "   2. Grab your shiny new API key"
-    echo "   3. Edit .env and replace the placeholder:"
-    echo "      LIMITLESS_API_KEY=your_actual_api_key_here"
-    echo ""
-    echo "💡 Remember: Your real API key will look much more random and mysterious!"
-    echo ""
-    exit 1
-fi
-
-# Test API key validity by making a test call
-print_info "Testing API key connectivity..."
-if command -v curl &> /dev/null; then
-    # Test the API key with a simple stats call
+# Final API key validation (if we didn't just set it up)
+HTTP_STATUS="200"  # Default to success
+if [ "$NEED_SETUP" = false ] && command -v curl &> /dev/null; then
+    print_info "Validating existing API key..."
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "X-API-Key: $API_KEY" "https://api.limitless.ai/v1/chats?limit=1" --connect-timeout 10 --max-time 15)
     
     if [ "$HTTP_STATUS" = "200" ]; then
         print_status "API key is valid and working"
     elif [ "$HTTP_STATUS" = "401" ] || [ "$HTTP_STATUS" = "403" ]; then
-        print_error "API key authentication failed (HTTP $HTTP_STATUS)"
-        echo ""
-        echo "🔐 Looks like your API key and the Limitless servers aren't on speaking terms!"
-        echo ""
-        echo "Don't panic! Here's your troubleshooting checklist:"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "📋 Quick Fixes:"
-        echo "   • Double-check your API key in .env file"
-        echo "   • Copy-paste it fresh from: https://www.limitless.ai/developers"
-        echo "   • Remove any sneaky spaces or invisible characters"
-        echo "   • Make sure you didn't accidentally include the quotes in the key itself"
-        echo ""
-        echo "🕵️ Detective Work:"
-        echo "   • Verify your Limitless account is still active"
-        echo "   • Double-check you copied the entire key (no missing characters)"
-        echo "   • Try generating a fresh API key if this one seems cursed"
-        echo ""
-        echo "💡 Pro Tip: Your API key should look like a UUID (lots of dashes and characters)"
-        echo "    Example format: 12345678-1234-1234-1234-123456789abc"
-        echo ""
-        echo "Still stuck? The Limitless team is pretty helpful at resolving these mysteries! 🕵️‍♂️"
-        echo ""
+        print_error "Existing API key is no longer valid"
+        echo "Please run the script again to enter a new API key."
         exit 1
-    elif [ "$HTTP_STATUS" = "000" ]; then
-        print_warning "Could not connect to Limitless API (network issue)"
-        echo ""
-        echo "🌐 Houston, we have a network problem!"
-        echo ""
-        echo "Your internet seems to be playing hide and seek with the Limitless servers."
-        echo "This could mean:"
-        echo "   • Your WiFi is taking a coffee break ☕"
-        echo "   • The Limitless servers are having a moment"
-        echo "   • Your firewall is being overly protective"
-        echo ""
-        echo "📡 Don't worry, we'll try to start the app anyway and hope for the best!"
-        echo "    (You can test connectivity later once everything is running)"
-        echo ""
-    else
-        print_warning "API test returned unexpected status: HTTP $HTTP_STATUS"
-        echo ""
-        echo "🤔 Well, that's... interesting! Got an unexpected response from the API."
-        echo ""
-        echo "This might be:"
-        echo "   • A temporary server hiccup (it happens to the best of us)"
-        echo "   • Some new API behavior we haven't seen before"
-        echo "   • The internet being its mysterious self"
-        echo ""
-        echo "🚀 We'll optimistically try to start the app anyway!"
-        echo "    If things get weird, double-check your API key at:"
-        echo "    https://www.limitless.ai/developers"
-        echo ""
     fi
-else
-    print_warning "curl not available - skipping API key validation"
-    echo "Install curl for full API key validation"
 fi
 
-print_status "Environment configuration found"
+# Check for Daily Insights (if API key works)
+print_info "Checking for Daily Insights in your Limitless account..."
+if command -v curl &> /dev/null && [ "$HTTP_STATUS" = "200" ]; then
+    # Look for daily insights chats
+    DAILY_INSIGHTS_COUNT=$(curl -s -H "X-API-Key: $API_KEY" "https://api.limitless.ai/v1/chats?q=Daily%20insights&limit=10" --connect-timeout 10 --max-time 15 | grep -o '"id"' | wc -l | tr -d ' ')
+    
+    if [ "$DAILY_INSIGHTS_COUNT" -gt 0 ]; then
+        print_status "Found $DAILY_INSIGHTS_COUNT Daily Insights in your account"
+    else
+        print_warning "⚠️  No Daily Insights found in your Limitless account!"
+        echo ""
+        echo "🧠 IMPORTANT: Memento depends on Daily Insights from Limitless AI"
+        echo "════════════════════════════════════════════════════════════════"
+        echo ""
+        echo "📱 Before using Memento, you need to:"
+        echo "   1. Open your Limitless AI app"
+        echo "   2. Go to: Settings → Notification → Daily Insights (toggle ON)"
+        echo "   3. Wait for Limitless to generate at least one daily insight"
+        echo "   4. Check that you can see daily insights in your app chat history"
+        echo ""
+        echo "⏰ Daily Insights are typically generated around 7:00 AM Pacific Time"
+        echo ""
+        echo "🔍 If you don't see Daily Insights in Limitless, you won't see them here!"
+        echo "   This is normal for new accounts or days when Limitless hasn't"
+        echo "   processed enough data to generate insights."
+        echo ""
+        echo "🚀 Don't worry - we'll start the app anyway. You can:"
+        echo "   • Sync later when you have daily insights"
+        echo "   • Create custom action items in the meantime"
+        echo ""
+        echo -n "Continue anyway? (Y/n): "
+        read -n 1 CONTINUE_ANYWAY
+        echo ""
+        if [[ "$CONTINUE_ANYWAY" =~ ^[Nn]$ ]]; then
+            echo ""
+            print_info "Come back when you have some Daily Insights! 🧠✨"
+            exit 0
+        fi
+    fi
+else
+    print_info "Skipping Daily Insights check (API test didn't complete)"
+fi
+
+print_status "Environment configuration ready"
 
 # Function to kill background processes on exit
 cleanup() {
@@ -286,6 +335,12 @@ fi
 
 print_status "Frontend server running on port 5173"
 
+# Check if this is a first run (no database exists)
+FIRST_RUN=false
+if [ ! -f "backend/insights.db" ]; then
+    FIRST_RUN=true
+fi
+
 echo ""
 print_status "All servers started successfully!"
 echo ""
@@ -294,11 +349,30 @@ echo "   ${GREEN}Frontend:${NC}    http://localhost:5173"
 echo "   ${GREEN}Backend API:${NC} http://localhost:8000"
 echo "   ${GREEN}API Docs:${NC}    http://localhost:8000/docs"
 echo ""
-echo "📝 Quick commands:"
-echo "   ${BLUE}Test API:${NC}    curl http://localhost:8000/stats"
-echo "   ${BLUE}Sync data:${NC}   cd backend && python3 sync.py"
-echo "   ${BLUE}Stop servers:${NC} Press Ctrl+C"
-echo ""
+
+if [ "$FIRST_RUN" = true ]; then
+    echo "🎉 Welcome to Memento! This appears to be your first run."
+    echo ""
+    echo "📋 Next Steps:"
+    echo "   1. ${BLUE}Open the app:${NC} http://localhost:5173"
+    echo "   2. ${BLUE}Sync your data:${NC} Click the sync button in the app"
+    echo "      (or run: cd backend && python3 sync.py)"
+    echo "   3. ${BLUE}Explore your insights:${NC} Browse by date or view all content"
+    echo ""
+        echo "💡 ${YELLOW}Don't see any data after syncing?${NC}"
+        echo "   • Enable in Limitless: Settings → Notification → Daily Insights (ON)"
+        echo "   • Check that you can see daily insights in Limitless chat history first"
+        echo "   • Remember: insights are generated around 7:00 AM Pacific"
+        echo "   • You can still create custom action items in the app!"
+    echo ""
+else
+    echo "📝 Quick commands:"
+    echo "   ${BLUE}Test API:${NC}    curl http://localhost:8000/stats"
+    echo "   ${BLUE}Sync data:${NC}   cd backend && python3 sync.py"
+    echo "   ${BLUE}Stop servers:${NC} Press Ctrl+C"
+    echo ""
+fi
+
 print_info "Press Ctrl+C to stop all servers"
 echo "============================================="
 
