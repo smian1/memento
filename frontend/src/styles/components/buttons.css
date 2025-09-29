@@ -1,0 +1,104 @@
+/* Section Buttons - Navigation and Tabs */
+.consolidated-sections {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* Tabs layout for main content */
+.consolidated-sections.tabs-layout {
+  flex-direction: row;
+  gap: 0.5rem;
+  overflow-x: auto;
+  border-bottom: 2px solid var(--border-subtle);
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-button {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Tab-specific styling */
+.section-button.section-tab {
+  width: auto;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.section-button.section-tab:hover {
+  background: rgba(6, 182, 212, 0.1);
+  border-bottom-color: rgba(6, 182, 212, 0.3);
+  color: var(--text-primary);
+}
+
+.section-button.section-tab.active {
+  background: rgba(6, 182, 212, 0.12);
+  border-bottom-color: var(--color-primary-cyan);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.section-button:hover:not(.active) {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.3);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* Subtle hover enhancement for active buttons */
+.section-button.active:hover {
+  background: rgba(6, 182, 212, 0.06);
+  border-color: var(--color-primary-cyan);
+}
+
+.section-button.active {
+  /* Ultra-subtle selection - just a thin left accent and barely visible background */
+  background: rgba(6, 182, 212, 0.05);
+  border-color: var(--color-primary-cyan);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Enhanced Sidebar Button Styles */
+.section-button {
+  transition: all 0.2s ease;
+}
+
+.section-button:hover {
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+}
+
+.section-button-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* More compact spacing for tabs */
+.section-button.section-tab .section-button-content {
+  gap: 8px;
+}

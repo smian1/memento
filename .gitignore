@@ -1,0 +1,41 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Build output
+/dist/
+/dist-ssr/
+/build/
+
+# Vite cache
+/.vite/
+
+# Local data
+/data/
+*.db
+
+# Environment variables
+.env
+.env.*
+
+# Coverage and reports
+/coverage/
+*.lcov
+
+# Misc
+.DS_Store
+
+#Playwright
+.playwright*
+
+# Documentation files that shouldn't be committed
+AGENTS.md
+CLAUDE.md
+
+# Development artifacts that shouldn't be committed
+cookie.txt
+
+CHANGELOG.md
+

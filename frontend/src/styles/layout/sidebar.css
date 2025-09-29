@@ -1,0 +1,169 @@
+/* Sidebar Layout and Structure */
+.sidebar {
+  background: var(--surface-primary);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-subtle);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  background: var(--bg-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Calendar Section in Sidebar */
+.calendar-section {
+  margin-bottom: 1.25rem;
+}
+
+.calendar {
+  margin-bottom: 0;
+}
+
+/* Section Tabs in Sidebar */
+.sidebar .section-tabs {
+  margin-bottom: 1.25rem;
+}
+
+.sidebar .section-tabs .consolidated-sections {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar .section-tabs .section-button {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+}
+
+/* Sidebar Filters */
+.sidebar-filters {
+  margin-top: 30px;
+}
+
+.sidebar-filters-header {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(124, 58, 237, 0.15));
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 12px 12px 0 0;
+  padding: 10px 12px;
+  margin-bottom: 0;
+}
+
+.sidebar-filters-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary-cyan);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-filters .filter-bar {
+  margin-bottom: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: none;
+  padding: 12px;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Compact filter layout for sidebar */
+.sidebar-filters .filter-section {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.sidebar-filters .filter-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sidebar-filters .filter-header {
+  display: none;
+}
+
+/* Compact source filter - single row with icons */
+.sidebar-filters .source-buttons {
+  width: 100%;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.sidebar-filters .source-button {
+  flex: 1;
+  justify-content: center;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.sidebar-filters .source-button .icon {
+  margin-right: 4px;
+}
+
+/* More compact tag and checkbox layout */
+.sidebar-filters .tag-filter-button {
+  flex: 1;
+  justify-content: center;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.sidebar-filters .filter-checkbox {
+  padding: 4px 0;
+  font-size: 0.75rem;
+}
+
+.sidebar-filters .active-filters {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.sidebar-filters .active-filters-label {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.sidebar-filters .clear-filters-button {
+  width: 100%;
+  justify-content: center;
+  margin-top: 6px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+}
+
+/* Tag dropdown positioning in sidebar */
+.sidebar-filters .tag-dropdown {
+  left: 0;
+  right: 0;
+  min-width: auto;
+  width: 100%;
+}
+
+/* Responsive sidebar */
+@media (max-width: 1024px) {
+  .sidebar {
+    max-height: 300px;
+  }
+}

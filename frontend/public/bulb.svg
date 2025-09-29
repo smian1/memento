@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bulbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Light bulb shape -->
+  <path fill="url(#bulbGradient)" d="M16 2c-5.523 0-10 4.477-10 10 0 3.5 1.8 6.6 4.5 8.4v3.6c0 1.1.9 2 2 2h7c1.1 0 2-.9 2-2v-3.6c2.7-1.8 4.5-4.9 4.5-8.4 0-5.523-4.477-10-10-10z"/>
+
+  <!-- Base/socket -->
+  <rect x="12" y="24" width="8" height="2" rx="1" fill="url(#bulbGradient)" opacity="0.8"/>
+  <rect x="13" y="26" width="6" height="2" rx="1" fill="url(#bulbGradient)" opacity="0.6"/>
+
+  <!-- Highlight/shine effect -->
+  <ellipse cx="13" cy="8" rx="2" ry="3" fill="white" opacity="0.3"/>
+
+  <!-- Filament lines -->
+  <path d="M13 10 L19 16 M19 10 L13 16" stroke="white" stroke-width="0.5" opacity="0.4"/>
+</svg>

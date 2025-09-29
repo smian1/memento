@@ -1,0 +1,45 @@
+{
+  "name": "memento",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "postinstall": "npm install --prefix frontend",
+    "preinstall": "node -e \"console.log('Node.js version:', process.version); console.log('Architecture:', process.arch, process.platform);\"",
+    "dev": "tsx server/src/index.ts",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "npm --prefix frontend run build",
+    "build:server": "tsc -p server/tsconfig.json",
+    "start": "NODE_ENV=production node dist/server/index.js",
+    "rebuild-native": "npm rebuild better-sqlite3"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.5.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "drizzle-orm": "^0.36.4",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.5.0",
+    "node-cron": "^3.0.3",
+    "uuid": "^9.0.1",
+    "vite-express": "^0.14.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^22.9.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/uuid": "^9.0.7",
+    "@types/better-sqlite3": "^7.6.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

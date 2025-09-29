@@ -1,0 +1,234 @@
+/* Audio Player Components */
+
+/* Main Audio Player */
+.audio-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.play-button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 10px;
+  padding: 0;
+}
+
+.play-button:hover {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.6);
+  transform: scale(1.1);
+}
+
+.play-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.play-button.playing {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.6);
+}
+
+.play-button.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.play-button.error:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.play-button.error .loading-spinner {
+  border-color: rgba(239, 68, 68, 0.3);
+  border-top-color: #ef4444;
+}
+
+.loading-spinner {
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-top: 1px solid #7c3aed;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.audio-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+.time-display {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 10px;
+}
+
+.duration {
+  opacity: 0.7;
+}
+
+.duration-hint {
+  font-size: 10px;
+  color: #71717a;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+}
+
+.progress-bar {
+  width: 40px;
+  height: 2px;
+  background: rgba(161, 161, 170, 0.2);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #7c3aed;
+  transition: width 0.1s ease;
+}
+
+/* Compact version for lifelog entries */
+.audio-player.compact {
+  margin-left: 4px;
+}
+
+.audio-player.compact .play-button {
+  width: 16px;
+  height: 16px;
+  font-size: 8px;
+}
+
+.audio-player.compact .audio-info {
+  font-size: 10px;
+}
+
+.audio-player.compact .progress-bar {
+  width: 30px;
+}
+
+.audio-player.compact .duration-hint {
+  font-size: 9px;
+}
+
+/* Segment Audio Player */
+.segment-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.segment-audio-player.error {
+  opacity: 0.6;
+}
+
+.segment-audio-player .play-pause-button {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+}
+
+.segment-audio-player .play-pause-button:hover {
+  background: rgba(100, 116, 139, 0.2);
+  color: #06b6d4;
+}
+
+.segment-audio-player .play-pause-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.segment-audio-player .download-button {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+}
+
+.segment-audio-player .download-button:hover {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+}
+
+.segment-audio-player .time-info {
+  font-size: 0.625rem;
+  color: #64748b;
+  min-width: 50px;
+}
+
+.segment-audio-player .time-display {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.segment-audio-player .loading-spinner {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(100, 116, 139, 0.3);
+  border-top: 1.5px solid #64748b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.segment-audio-player .error-text {
+  font-size: 0.625rem;
+  color: #ef4444;
+}
+
+/* Lifelog Audio Download Button */
+.lifelog-download-button {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+}
+
+.lifelog-download-button:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: #64748b;
+}

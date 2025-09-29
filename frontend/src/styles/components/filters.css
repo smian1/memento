@@ -1,0 +1,190 @@
+/* Filter Bar and Filter Components */
+
+/* Main Filter Bar */
+.filter-bar {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-header {
+  gap: 8px;
+  color: #06b6d4;
+  font-weight: 600;
+  padding-right: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.filter-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #e5e5e7;
+  white-space: nowrap;
+}
+
+/* Source Filter Buttons */
+.source-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.source-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: #e5e5e7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.source-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.source-button.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+/* Filter Checkboxes */
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #e5e5e7;
+}
+
+.filter-checkbox input {
+  accent-color: #667eea;
+}
+
+/* Tag Filter Button */
+.tag-filter-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: #e5e5e7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 500;
+  position: relative;
+}
+
+.tag-filter-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tag-count {
+  background: #667eea;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Clear Filters Button */
+.clear-filters-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.clear-filters-button:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Active Filters */
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.active-filters-label {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  font-weight: 500;
+}
+
+.active-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.active-filter-tag:hover {
+  opacity: 0.8;
+}
+
+.remove-filter {
+  opacity: 0.7;
+}
+
+.remove-filter:hover {
+  opacity: 1;
+}
+
+/* Dropdown Overlay */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--layer-dropdown-backdrop);
+}

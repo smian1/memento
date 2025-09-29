@@ -1,0 +1,316 @@
+/* Menu Components - Action Menus, Dropdowns, and More Buttons */
+
+/* More Menu Container */
+.more-menu-container {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  z-index: var(--layer-dropdown);
+}
+
+/* More Button Styles */
+.more-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.more-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #e5e5e7;
+}
+
+.more-button.active {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.4);
+  color: #a5b4fc;
+}
+
+/* Dropdown Backdrop */
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--layer-dropdown-backdrop);
+  background: transparent;
+}
+
+/* Menu hover container for better hover handling */
+.menu-hover-container {
+  position: relative;
+}
+
+/* Action Menu Dropdown Styles */
+.action-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.25rem;
+  min-width: 200px;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  z-index: var(--layer-dropdown);
+  overflow: hidden;
+}
+
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #e2e8f0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.action-menu-item:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.action-menu-item:active {
+  transform: translateX(1px);
+}
+
+.action-menu-item.danger {
+  color: #fca5a5;
+}
+
+.action-menu-item.danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.action-menu-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.action-menu-item:hover .action-menu-icon {
+  opacity: 1;
+}
+
+.action-menu-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.action-menu-shortcut {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+.action-menu-item:hover .action-menu-shortcut {
+  color: #94a3b8;
+}
+
+/* Action Menu Sections */
+.action-menu-section {
+  padding: 0.25rem 0;
+}
+
+.action-menu-section:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.action-menu-section-title {
+  padding: 0.5rem 1rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Extend hover area for tag action item */
+.extend-hover-area {
+  position: relative;
+}
+
+.extend-hover-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -8px;
+  right: -8px;
+  bottom: 0;
+  z-index: -1;
+}
+
+/* Context Menu Styles */
+.context-menu {
+  position: fixed;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  z-index: var(--layer-dropdown);
+  overflow: hidden;
+  min-width: 180px;
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.context-menu-item:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: #ffffff;
+}
+
+.context-menu-item:first-child {
+  margin-top: 0.125rem;
+}
+
+.context-menu-item:last-child {
+  margin-bottom: 0.125rem;
+}
+
+.context-menu-item.danger {
+  color: #fca5a5;
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.context-menu-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.context-menu-item:hover .context-menu-icon {
+  opacity: 1;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0.25rem 0;
+}
+
+/* Submenu Styles */
+.submenu {
+  position: relative;
+}
+
+.submenu-trigger {
+  position: relative;
+}
+
+.submenu-trigger::after {
+  content: '›';
+  position: absolute;
+  right: 0.875rem;
+  font-size: 1rem;
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.submenu-trigger:hover::after {
+  color: #94a3b8;
+}
+
+.submenu-content {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 0.25rem;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  min-width: 160px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-8px);
+  transition: all 0.2s ease;
+}
+
+.submenu:hover .submenu-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* Menu Animation */
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.action-menu-dropdown,
+.context-menu {
+  animation: menuSlideIn 0.15s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .action-menu-dropdown {
+    min-width: 180px;
+    right: -0.5rem;
+  }
+  
+  .action-menu-item {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .action-menu-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .context-menu {
+    min-width: 200px;
+  }
+  
+  .context-menu-item {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,147 @@
+/* Calendar Component Styles */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.calendar-nav {
+  background: none;
+  border: none;
+  color: var(--color-primary-cyan);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav:hover {
+  background: rgba(6, 182, 212, 0.1);
+}
+
+.calendar-month {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.calendar-day-header {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 8px 4px;
+  font-weight: 500;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.calendar-day:hover {
+  background: rgba(6, 182, 212, 0.1);
+}
+
+.calendar-day.has-insight {
+  background: rgba(124, 58, 237, 0.2);
+}
+
+.calendar-day.has-insight:hover {
+  background: rgba(124, 58, 237, 0.3);
+}
+
+.calendar-day.selected {
+  background: var(--bg-gradient-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day.other-month {
+  color: #ccc;
+  opacity: 0.5;
+}
+
+/* Enhanced Calendar with Life Log indicators */
+.calendar-day {
+  position: relative;
+}
+
+.calendar-day-number {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+
+.calendar-day.has-lifelog {
+  background: rgba(6, 182, 212, 0.2);
+}
+
+.calendar-day.has-lifelog:hover {
+  background: rgba(6, 182, 212, 0.3);
+}
+
+.calendar-day.has-insight.has-lifelog {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(6, 182, 212, 0.3));
+}
+
+.calendar-day.has-insight.has-lifelog:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(6, 182, 212, 0.4));
+}
+
+/* Calendar Day Indicators - Fixed positioning and styling */
+.calendar-day-number {
+  font-weight: 500;
+  color: inherit;
+}
+
+.calendar-day-indicators {
+  display: flex;
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  gap: 2px;
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.insight-indicator {
+  background-color: var(--color-primary-purple);
+}
+
+.lifelog-indicator {
+  background-color: var(--color-primary-cyan);
+}
+
+/* Responsive calendar */
+@media (max-width: 1024px) {
+  .calendar-grid {
+    gap: 2px;
+  }
+  
+  .calendar-day {
+    font-size: 0.8rem;
+  }
+}

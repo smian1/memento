@@ -1,0 +1,26 @@
+/* Main App Layout */
+.app {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  height: calc(100vh - 80px); /* Subtract header height */
+  margin: 0;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  transition: all 0.3s ease;
+  overflow: hidden; /* Prevent container from scrolling */
+}
+
+.container.with-chat {
+  grid-template-columns: 300px 1fr 400px;
+  gap: 1rem;
+  flex: 1;
+  overflow: hidden;
+  max-width: none;
+}

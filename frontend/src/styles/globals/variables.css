@@ -1,0 +1,39 @@
+/* CSS Custom Properties - Design System */
+:root {
+  /* Z-index layers */
+  --layer-base: 0;
+  --layer-content-raised: 1;
+  --layer-floating-button: 10;
+  --layer-floating-panel: 100;
+  --layer-dropdown-backdrop: 900;
+  --layer-dropdown: 910;
+  --layer-modal-backdrop: 2000;
+  --layer-modal: 2001;
+  --layer-toast: 3000;
+
+  /* Color tokens */
+  --color-icon-on-dark: #f1f5f9;
+  
+  /* Primary colors */
+  --color-primary-purple: #7c3aed;
+  --color-primary-cyan: #06b6d4;
+  --color-accent-yellow: #fbbf24;
+  
+  /* Background gradients */
+  --bg-gradient-main: linear-gradient(135deg, #0f0a1f 0%, #1a0f2e 50%, #2d1b4e 100%);
+  --bg-gradient-primary: linear-gradient(135deg, #7c3aed, #06b6d4);
+  
+  /* Text colors */
+  --text-primary: #e5e5e7;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Surface colors */
+  --surface-primary: rgba(20, 20, 30, 0.8);
+  --surface-raised: rgba(15, 10, 31, 0.95);
+  --surface-glass: rgba(255, 255, 255, 0.05);
+  
+  /* Border colors */
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(6, 182, 212, 0.3);
+}
