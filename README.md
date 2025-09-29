@@ -28,7 +28,7 @@ A beautiful, self-hosted web application for managing and analyzing your daily i
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/smian1/memento2.git
+git clone https://github.com/smian1/memento.git
 cd memento
 npm install
 ```
@@ -420,7 +420,7 @@ We welcome contributions! Here's how to get started:
 ### Development Setup
 ```bash
 # Clone your fork
-git clone https://github.com/smian1/memento2.git
+git clone https://github.com/smian1/memento.git
 cd memento
 
 # Install dependencies
