@@ -25,10 +25,11 @@ export function extractStructuredData(content: string, date: string): Structured
     const items: string[] = [];
     let pattern: RegExp;
 
+    // Match section headers with optional emojis and whitespace before the text
     if (subsectionHeader) {
-      pattern = new RegExp(`##\\s+${escapeRegex(sectionHeader)}.*?###\\s+${escapeRegex(subsectionHeader)}(.*?)(?=###|##|#|$)`, 'gis');
+      pattern = new RegExp(`##\\s+[^\\n]*${escapeRegex(sectionHeader)}.*?###\\s+[^\\n]*${escapeRegex(subsectionHeader)}(.*?)(?=###|##|#|$)`, 'gis');
     } else {
-      pattern = new RegExp(`##\\s+${escapeRegex(sectionHeader)}(.*?)(?=##|#|$)`, 'gis');
+      pattern = new RegExp(`##\\s+[^\\n]*${escapeRegex(sectionHeader)}(.*?)(?=##|#|$)`, 'gis');
     }
 
     const match = pattern.exec(content);
@@ -47,7 +48,7 @@ export function extractStructuredData(content: string, date: string): Structured
     }
 
     if (items.length === 0) {
-      const mainPattern = new RegExp(`##\\s+${escapeRegex(sectionHeader)}[^\\n]*\\n(.*?)(?=\\n## [A-Z]|\\Z)`, 'gis');
+      const mainPattern = new RegExp(`##\\s+[^\\n]*${escapeRegex(sectionHeader)}[^\\n]*\\n(.*?)(?=\\n## [A-Z]|\\Z)`, 'gis');
       const mainMatch = mainPattern.exec(content);
       if (mainMatch?.[1]) {
         const h3Pattern = /###\s+###\s+([^\n]+)\n(.*?)(?=\n###\s+###|\n###(?!\s+###)|\n##|\Z)/gms;
@@ -69,17 +70,34 @@ export function extractStructuredData(content: string, date: string): Structured
 
   function extractQuotes(): { text: string; speaker: string }[] {
     const results: { text: string; speaker: string }[] = [];
-    const patterns = [
-      />\s*\*\*Quote that stands out:\*\*\s*"([^"]+)"\s*—\s*([^.\n]+)/g,
-      />\s*"([^"]+)"\s*\n>\s*—\s*([^.\n]+)/g
-    ];
 
-    for (const pattern of patterns) {
-      let match = pattern.exec(content);
-      while (match) {
-        results.push({ text: match[1].trim(), speaker: match[2].trim() });
-        match = pattern.exec(content);
+    // Pattern 1: "Quote that stands out:" format with attribution
+    const pattern1 = />\s*\*\*Quote that stands out:\*\*\s*\n?\s*>\s*"([^"]+)"\s*(?:—\s*([^.\n]+))?/g;
+    let match1 = pattern1.exec(content);
+    while (match1) {
+      results.push({ text: match1[1].trim(), speaker: match1[2]?.trim() || 'Unknown' });
+      match1 = pattern1.exec(content);
+    }
+
+    // Pattern 2: Standard blockquote with attribution (Memorable Exchanges)
+    const pattern2 = />\s*"([^"]+)"\s*(?:\.\.\.\s*"([^"]+)")?\s*—\s*([^.\n]+)/g;
+    let match2 = pattern2.exec(content);
+    while (match2) {
+      const text = match2[2] ? `${match2[1]}... ${match2[2]}` : match2[1];
+      results.push({ text: text.trim(), speaker: match2[3].trim() });
+      match2 = pattern2.exec(content);
+    }
+
+    // Pattern 3: Simple blockquote without attribution
+    const pattern3 = />\s*"([^"]+)"\s*$/gm;
+    let match3 = pattern3.exec(content);
+    while (match3) {
+      // Only add if not already captured by other patterns
+      const alreadyCaptured = results.some(q => q.text.includes(match3[1].trim()));
+      if (!alreadyCaptured) {
+        results.push({ text: match3[1].trim(), speaker: 'Unknown' });
       }
+      match3 = pattern3.exec(content);
     }
 
     return results;
@@ -87,26 +105,46 @@ export function extractStructuredData(content: string, date: string): Structured
 
   function extractRecurringThemes(): { title: string; description: string }[] {
     const results: { title: string; description: string }[] = [];
-    const themePattern = /### Recurring Theme Noticed:?([^\n]*)\n(.*?)(?=###|##|#|$)/gms;
+
+    // Match patterns like:
+    // ### Recurring Theme Noticed
+    // -   **Title:** Description
+    const themePattern = /### [^#\n]*Recurring Theme[^#\n]*\n(.*?)(?=###|##|#|$)/gis;
     let match = themePattern.exec(content);
+
     while (match) {
-      const title = collapseWhitespace(stripBold(match[1]));
-      const description = collapseWhitespace(stripQuotes(match[2]));
-      results.push({
-        title,
-        description: description.length > 500 ? `${description.slice(0, 500)}...` : description
-      });
+      const sectionContent = match[1];
+      // Extract bullet items with bold titles, but skip "Quote that stands out"
+      const bulletPattern = /^\s*[-*]\s+\*\*([^:*]+):\*\*\s*(.+?)(?=^\s*[-*]\s+\*\*|$)/gms;
+      let bulletMatch = bulletPattern.exec(sectionContent);
+
+      while (bulletMatch) {
+        const title = collapseWhitespace(bulletMatch[1]);
+        // Skip if this is a "Quote that stands out" item
+        if (title.toLowerCase().includes('quote that stands out')) {
+          bulletMatch = bulletPattern.exec(sectionContent);
+          continue;
+        }
+        const description = collapseWhitespace(stripQuotes(bulletMatch[2]));
+        results.push({
+          title,
+          description: description.length > 500 ? `${description.slice(0, 500)}...` : description
+        });
+        bulletMatch = bulletPattern.exec(sectionContent);
+      }
+
       match = themePattern.exec(content);
     }
+
     return results;
   }
 
   function extractTopHighlights(): string[] {
     const results: string[] = [];
-    const highlightPattern = /\*\*Top Highlights\*\*(.*?)(?=\n## [A-Z]|\Z)/gms;
+    const highlightPattern = /\*\*Top Highlights\*\*(.*?)(?=\n##|\Z)/gms;
     const match = highlightPattern.exec(content);
     if (match?.[1]) {
-      const bulletPattern = /^\s*\*\s+(.+?)(?=\n\s*\*|\n\s*$)/gms;
+      const bulletPattern = /^\s*[-*]\s+(.+?)(?=\n\s*[-*]|\n\s*$)/gms;
       let bulletMatch = bulletPattern.exec(match[1]);
       while (bulletMatch) {
         const clean = collapseWhitespace(stripBold(bulletMatch[1]));
@@ -137,7 +175,7 @@ export function extractStructuredData(content: string, date: string): Structured
 
   // Capture new triple hash action items if present
   if (content.includes('Key Follow-Ups')) {
-    const followUpPattern = /## Key Follow-Ups.*?(?=\n## |\Z)/gms;
+    const followUpPattern = /##\s+[^#\n]*Key Follow-Ups.*?(?=\n## |\Z)/gms;
     const followMatch = followUpPattern.exec(content);
     if (followMatch) {
       const section = followMatch[0];
