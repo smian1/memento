@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Calendar } from 'lucide-react';
 import { ActionItem } from './ActionItem';
 import { InlineEdit } from './InlineEdit';
+import { CreateActionItemPanel } from './CreateActionItemPanel';
 import type { FilterOptions } from './FilterBar';
 import { formatInlineText } from '../utils/formatText';
 import {
@@ -16,7 +17,6 @@ import {
   type ActionItem as ActionItemType,
   type KnowledgeNugget,
   type MemorableExchange,
-  ActionItemSource,
 } from '../api/client';
 
 type SectionType =
@@ -79,15 +79,13 @@ interface ConsolidatedViewProps {
 export function ConsolidatedView({ activeSection, searchTerm = '', selectedDate, filters = {}, onStatsRefresh, refreshTrigger }: ConsolidatedViewProps) {
   const [sectionData, setSectionData] = useState<SectionItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newItemContent, setNewItemContent] = useState('');
-  const [createItemDate, setCreateItemDate] = useState(new Date().toISOString().split('T')[0]);
+  const [showCreatePanel, setShowCreatePanel] = useState(false);
 
   // Listen for the custom event from DashboardApp
   useEffect(() => {
     const handleShowCreateForm = () => {
       if (activeSection === 'action_items') {
-        setShowCreateForm(true);
+        setShowCreatePanel(true);
       }
     };
 
@@ -149,44 +147,21 @@ export function ConsolidatedView({ activeSection, searchTerm = '', selectedDate,
     loadSectionData(activeSection);
   }, [activeSection, filters, refreshTrigger, loadSectionData]);
 
-  const handleCreateCustomItem = async () => {
-    if (!newItemContent.trim()) return;
+  const handleItemCreated = (newItem: ActionItemType) => {
+    setSectionData(prev => [newItem, ...prev]);
 
-    try {
-      const response = await actionItemsApi.create({
-        content: newItemContent.trim(),
-        date: createItemDate,
-        source: ActionItemSource.CUSTOM
-      });
-
-      setSectionData(prev => [response.data, ...prev]);
-      setNewItemContent('');
-      setShowCreateForm(false);
-      
-      // Refresh stats when new action item is created
-      if (onStatsRefresh) {
-        onStatsRefresh();
-      }
-    } catch (error) {
-      console.error('Error creating custom action item:', error);
-    }
-  };
-
-  const handleDeleteItem = (itemId: number) => {
-    setSectionData(prev => prev.filter(item => item.id !== itemId));
-    
-    // Refresh stats when action item is deleted
+    // Refresh stats when new action item is created
     if (onStatsRefresh) {
       onStatsRefresh();
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      handleCreateCustomItem();
-    } else if (e.key === 'Escape') {
-      setShowCreateForm(false);
-      setNewItemContent('');
+  const handleDeleteItem = (itemId: number) => {
+    setSectionData(prev => prev.filter(item => item.id !== itemId));
+
+    // Refresh stats when action item is deleted
+    if (onStatsRefresh) {
+      onStatsRefresh();
     }
   };
 
@@ -263,53 +238,13 @@ export function ConsolidatedView({ activeSection, searchTerm = '', selectedDate,
 
   return (
     <div className="section-content">
-
-      {/* Custom Action Item Creation */}
-      {activeSection === 'action_items' && showCreateForm && (
-        <div className="create-section">
-          <div className="create-form">
-            <div className="create-form-header">
-              <h3>Create Custom Action Item</h3>
-              <input
-                type="date"
-                value={createItemDate}
-                onChange={(e) => setCreateItemDate(e.target.value)}
-                className="date-input"
-              />
-            </div>
-            <textarea
-              value={newItemContent}
-              onChange={(e) => setNewItemContent(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Enter your custom action item..."
-              className="create-textarea"
-              autoFocus
-            />
-            <div className="create-actions">
-              <button
-                className="create-button"
-                onClick={handleCreateCustomItem}
-                disabled={!newItemContent.trim()}
-              >
-                Create Item
-              </button>
-              <button
-                className="cancel-button"
-                onClick={() => {
-                  setShowCreateForm(false);
-                  setNewItemContent('');
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-            <div className="create-hint">
-              Press Cmd/Ctrl + Enter to save, Esc to cancel
-            </div>
-          </div>
-        </div>
+      {/* Custom Action Item Creation Modal */}
+      {activeSection === 'action_items' && showCreatePanel && (
+        <CreateActionItemPanel
+          onClose={() => setShowCreatePanel(false)}
+          onCreated={handleItemCreated}
+        />
       )}
-
 
       {groupedData.map(({ date, items }) => (
         <div key={date} className="date-group">
