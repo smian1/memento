@@ -148,6 +148,8 @@ async function refreshInsightStructure(userId: number, insightId: number, conten
   await db.delete(themes).where(eq(themes.insightId, insightId));
   await db.delete(quotes).where(eq(quotes.insightId, insightId));
   await db.delete(highlights).where(eq(highlights.insightId, insightId));
+  await db.delete(knowledgeNuggets).where(eq(knowledgeNuggets.insightId, insightId));
+  await db.delete(memorableExchanges).where(eq(memorableExchanges.insightId, insightId));
 
   if (structured.actionItems.length > 0) {
     await db.insert(actionItems).values(structured.actionItems.map((item) => ({ userId, insightId, date, content: item, source: 'LIMITLESS' })));
@@ -176,6 +178,14 @@ async function refreshInsightStructure(userId: number, insightId: number, conten
   if (structured.highlights.length > 0) {
     await db.insert(highlights).values(structured.highlights.map((item) => ({ userId, insightId, date, content: item })));
   }
+
+  if (structured.knowledgeNuggets.length > 0) {
+    await db.insert(knowledgeNuggets).values(structured.knowledgeNuggets.map((item) => ({ userId, insightId, date, category: item.category, fact: item.fact, source: item.source })));
+  }
+
+  if (structured.memorableExchanges.length > 0) {
+    await db.insert(memorableExchanges).values(structured.memorableExchanges.map((item) => ({ userId, insightId, date, dialogue: JSON.stringify(item.dialogue), context: item.context })));
+  }
 }
 
 export async function reprocessAllInsights(userId: number) {
@@ -191,6 +201,42 @@ export async function reprocessAllInsights(userId: number) {
   }
 
   return { processed, total: allInsights.length };
+}
+
+export async function reprocessInsightByDate(userId: number, date: string) {
+  const insight = await db
+    .select({ id: insights.id, date: insights.date, content: insights.content })
+    .from(insights)
+    .where(and(eq(insights.userId, userId), eq(insights.date, date)))
+    .limit(1);
+
+  if (insight.length === 0) {
+    return null;
+  }
+
+  await refreshInsightStructure(userId, insight[0].id, insight[0].content, insight[0].date);
+  return { processed: 1, date };
+}
+
+export async function reprocessInsightsByDateRange(userId: number, startDate: string, endDate: string) {
+  const rangeInsights = await db
+    .select({ id: insights.id, date: insights.date, content: insights.content })
+    .from(insights)
+    .where(
+      and(
+        eq(insights.userId, userId),
+        sql`${insights.date} >= ${startDate}`,
+        sql`${insights.date} <= ${endDate}`
+      )
+    );
+
+  let processed = 0;
+  for (const insight of rangeInsights) {
+    await refreshInsightStructure(userId, insight.id, insight.content, insight.date);
+    processed++;
+  }
+
+  return { processed, total: rangeInsights.length, startDate, endDate };
 }
 
 export async function listActionItems(userId: number, {

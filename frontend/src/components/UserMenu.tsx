@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { syncApi } from '../api/client';
 import { TimezoneSettings } from './TimezoneSettings';
 import { SpeakerManager } from './SpeakerManager';
+import { ReprocessPanel } from './ReprocessPanel';
 
 interface UserMenuProps {
   onSyncComplete?: (syncResults?: any) => void;
@@ -23,6 +24,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onSyncComplete, onNavigateTo
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [showTimezoneSettings, setShowTimezoneSettings] = useState(false);
   const [showSpeakerManager, setShowSpeakerManager] = useState(false);
+  const [showReprocessPanel, setShowReprocessPanel] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout, config } = useAuth();
 
@@ -144,6 +146,24 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onSyncComplete, onNavigateTo
           <div className="menu-section">
             <button
               className="menu-item"
+              onClick={() => {
+                setShowReprocessPanel(true);
+                setIsOpen(false);
+              }}
+            >
+              <HiRefresh className="menu-icon" />
+              <div className="menu-item-content">
+                <div className="menu-item-title">Reprocess Insights</div>
+                <div className="menu-item-description">Re-extract structured data</div>
+              </div>
+            </button>
+          </div>
+
+          <div className="menu-divider"></div>
+
+          <div className="menu-section">
+            <button
+              className="menu-item"
               onClick={() => setShowTimezoneSettings(!showTimezoneSettings)}
             >
               <HiClock className="menu-icon" />
@@ -209,6 +229,10 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onSyncComplete, onNavigateTo
             </div>
           </button>
         </div>
+      )}
+
+      {showReprocessPanel && (
+        <ReprocessPanel onClose={() => setShowReprocessPanel(false)} />
       )}
     </div>
   );

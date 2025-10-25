@@ -1,0 +1,341 @@
+.reprocess-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 10, 31, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--layer-modal-backdrop, 2000);
+  animation: fadeIn 0.2s ease;
+}
+
+.reprocess-panel {
+  background: linear-gradient(135deg, rgba(20, 20, 30, 0.95) 0%, rgba(15, 10, 31, 0.98) 100%);
+  border-radius: 20px;
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(124, 58, 237, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.3s ease;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.reprocess-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), transparent);
+}
+
+.reprocess-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.reprocess-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #e5e5e7;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 28px;
+  color: #9ca3af;
+  cursor: pointer;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e5e7;
+  border-color: rgba(124, 58, 237, 0.5);
+  transform: scale(1.05);
+}
+
+.reprocess-content {
+  padding: 24px;
+}
+
+.reprocess-description {
+  margin: 0 0 24px 0;
+  color: #9ca3af;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mode-selector label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  color: #9ca3af;
+  background: transparent;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.mode-selector label:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e5e7;
+}
+
+.mode-selector label.active {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(6, 182, 212, 0.2));
+  color: #e5e5e7;
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow:
+    0 2px 12px rgba(124, 58, 237, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mode-selector input[type="radio"] {
+  display: none;
+}
+
+.date-input-group {
+  margin-bottom: 16px;
+}
+
+.date-input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #e5e5e7;
+}
+
+.date-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e5e7;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: rgba(124, 58, 237, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 3px rgba(124, 58, 237, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.date-range-inputs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.date-range-inputs .date-input-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.warning-message {
+  padding: 16px;
+  background: rgba(251, 191, 36, 0.1);
+  border-left: 4px solid #fbbf24;
+  border-radius: 10px;
+  color: #fbbf24;
+  font-size: 14px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.result-message {
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+  border: 1px solid;
+}
+
+.result-message.success {
+  background: rgba(6, 182, 212, 0.1);
+  border-left: 4px solid #06b6d4;
+  border-color: rgba(6, 182, 212, 0.3);
+  color: #06b6d4;
+}
+
+.result-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.reprocess-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.reprocess-button {
+  flex: 1;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow:
+    0 4px 12px rgba(124, 58, 237, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.reprocess-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(124, 58, 237, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.reprocess-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.reprocess-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e5e7;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.cancel-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -7,7 +7,9 @@ const structuredDataSchema = z.object({
   questions: z.array(z.string()),
   themes: z.array(z.object({ title: z.string(), description: z.string() })),
   quotes: z.array(z.object({ text: z.string(), speaker: z.string() })),
-  highlights: z.array(z.string())
+  highlights: z.array(z.string()),
+  knowledgeNuggets: z.array(z.object({ category: z.string().optional(), fact: z.string(), source: z.string().optional() })),
+  memorableExchanges: z.array(z.object({ dialogue: z.array(z.object({ text: z.string() })), context: z.string().optional() }))
 });
 
 export type StructuredData = z.infer<typeof structuredDataSchema>;
@@ -20,6 +22,8 @@ export function extractStructuredData(content: string, date: string): Structured
   const themes: { title: string; description: string }[] = [];
   const quotes: { text: string; speaker: string }[] = [];
   const highlights: string[] = [];
+  const knowledgeNuggets: { category?: string; fact: string; source?: string }[] = [];
+  const memorableExchanges: { dialogue: { text: string }[]; context?: string }[] = [];
 
   function extractSectionItems(sectionHeader: string, subsectionHeader?: string): string[] {
     const items: string[] = [];
@@ -93,8 +97,8 @@ export function extractStructuredData(content: string, date: string): Structured
     let match3 = pattern3.exec(content);
     while (match3) {
       // Only add if not already captured by other patterns
-      const alreadyCaptured = results.some(q => q.text.includes(match3[1].trim()));
-      if (!alreadyCaptured) {
+      const alreadyCaptured = results.some(q => match3 && q.text.includes(match3[1].trim()));
+      if (!alreadyCaptured && match3) {
         results.push({ text: match3[1].trim(), speaker: 'Unknown' });
       }
       match3 = pattern3.exec(content);
@@ -139,19 +143,105 @@ export function extractStructuredData(content: string, date: string): Structured
     return results;
   }
 
+  function extractKnowledgeNuggets(): { category?: string; fact: string; source?: string }[] {
+    const results: { category?: string; fact: string; source?: string }[] = [];
+
+    // Look for Knowledge Nuggets section
+    const sectionPattern = /##\s+[^#\n]*Knowledge Nuggets.*?(?=\n##|\Z)/gis;
+    const sectionMatch = sectionPattern.exec(content);
+
+    if (sectionMatch) {
+      const sectionContent = sectionMatch[0];
+
+      // Extract bullet points with categories and sources
+      const bulletPattern = /\*\s+\*\*([^:]*?):\*\*\s+(.+?)(?=\n\s*\*\s+\*\*|\n\n|\Z)/gms;
+      let bulletMatch = bulletPattern.exec(sectionContent);
+
+      while (bulletMatch) {
+        const category = bulletMatch[1].trim();
+        const factText = bulletMatch[2].trim();
+
+        // Extract source from _Source: ... pattern
+        const sourceMatch = factText.match(/_Source:\s*([^_\n]+)_?$/);
+        const fact = sourceMatch ? factText.replace(/_Source:\s*[^_\n]+_?$/, '').trim() : factText;
+        const source = sourceMatch ? sourceMatch[1].trim() : undefined;
+
+        results.push({
+          category: category || undefined,
+          fact,
+          source
+        });
+
+        bulletMatch = bulletPattern.exec(sectionContent);
+      }
+    }
+
+    return results;
+  }
+
+  function extractMemorableExchanges(): { dialogue: { text: string }[]; context?: string }[] {
+    const results: { dialogue: { text: string }[]; context?: string }[] = [];
+
+    // Look for Memorable Exchanges section
+    const sectionPattern = /##\s+[^#\n]*Memorable Exchanges[\s\S]*?(?=\n##|\Z)/gi;
+    const sectionMatch = sectionPattern.exec(content);
+
+    if (sectionMatch) {
+      const sectionContent = sectionMatch[0];
+
+      // Get all lines and process line by line
+      const lines = sectionContent.split('\n');
+
+      let currentDialogue: { text: string }[] = [];
+      let context = '';
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        if (line.startsWith('> "') || (line.startsWith('>') && !line.includes('_—') && !line.includes('_–'))) {
+          // This is a dialogue line
+          const quoteText = line.substring(1).trim();
+          const cleanText = quoteText.replace(/^[">\s]*|["<\s]*$/g, '');
+          if (cleanText) {
+            currentDialogue.push({ text: cleanText });
+          }
+        } else if (line.startsWith('> _') && (line.includes('—') || line.includes('–') || line.includes('-'))) {
+          // This is an attribution line - end of current exchange
+          context = line.substring(1).trim();
+
+          if (currentDialogue.length > 0) {
+            results.push({
+              dialogue: currentDialogue,
+              context: context || undefined
+            });
+          }
+
+          // Reset for next exchange
+          currentDialogue = [];
+          context = '';
+        }
+      }
+    }
+
+    return results;
+  }
+
   function extractTopHighlights(): string[] {
     const results: string[] = [];
-    const highlightPattern = /\*\*Top Highlights\*\*(.*?)(?=\n##|\Z)/gms;
+    // Match both ### Top Highlights (header) and **Top Highlights** (bold)
+    const highlightPattern = /(?:###\s*Top Highlights|\*\*Top Highlights\*\*)\s*\n(.*?)(?=\n##)/gis;
     const match = highlightPattern.exec(content);
     if (match?.[1]) {
-      const bulletPattern = /^\s*[-*]\s+(.+?)(?=\n\s*[-*]|\n\s*$)/gms;
-      let bulletMatch = bulletPattern.exec(match[1]);
-      while (bulletMatch) {
-        const clean = collapseWhitespace(stripBold(bulletMatch[1]));
-        if (clean && clean.length > 10) {
-          results.push(clean);
+      // Extract bullets - each line starting with * followed by space
+      const lines = match[1].split('\n');
+      for (const line of lines) {
+        const bulletMatch = line.match(/^\s*\*\s+(.+)$/);
+        if (bulletMatch) {
+          const clean = collapseWhitespace(stripBold(bulletMatch[1]));
+          if (clean && clean.length > 10) {
+            results.push(clean);
+          }
         }
-        bulletMatch = bulletPattern.exec(match[1]);
       }
     }
     return results;
@@ -194,6 +284,7 @@ export function extractStructuredData(content: string, date: string): Structured
   }
 
   actionItems.push(...extractSectionItems('Key Follow-Ups', 'For You to Action'));
+  actionItems.push(...extractSectionItems('Key Follow-Ups', 'Household To-Dos'));
   if (actionItems.length === 0) {
     actionItems.push(...extractSectionItems('Commitment Tracker', 'Promises from You'));
   }
@@ -219,6 +310,12 @@ export function extractStructuredData(content: string, date: string): Structured
   const highlightResults = extractTopHighlights();
   highlights.push(...highlightResults);
 
+  const nuggetResults = extractKnowledgeNuggets();
+  knowledgeNuggets.push(...nuggetResults);
+
+  const exchangeResults = extractMemorableExchanges();
+  memorableExchanges.push(...exchangeResults);
+
   const parsed = structuredDataSchema.parse({
     actionItems,
     decisions,
@@ -226,7 +323,9 @@ export function extractStructuredData(content: string, date: string): Structured
     questions,
     themes,
     quotes,
-    highlights
+    highlights,
+    knowledgeNuggets,
+    memorableExchanges
   });
 
   return parsed;
